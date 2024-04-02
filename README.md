@@ -1,41 +1,47 @@
 # Chloroplast-and-Mitochondrial-Genome-Assembly-of-Illumina-sequence
 
+This method used for Illumina sequence nuclear dataset. Method used to map nuclear genome with reference genome and extract the chloroplast and mitochondrial sequence further used for assembly of chloroplast and mitochondria
 
-Commands and Procedure Glu and HCC
+* Commands and Procedure Local Server  and HCC
+
 1.	Trimming
 Command in HCC: 
-$ module load trimmomatic/0.36
+>module load trimmomatic/0.36
 
-$ trimmomatic PE L4_566_GDD_1.fq L4_566_GDD_2.fq /common/yinlab/kshahzad2/L4_566_GDD_forward_paired.fq.gz /common/yinlab/kshahzad2/L4_566_GDD_forward_unpaired.fq.gz /common/yinlab/kshahzad2/L4_566_GDD_reverse_paired.fq.gz /common/yinlab/kshahzad2/L4_566_GDD_reverse_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+>trimmomatic PE L4_566_GDD_1.fq L4_566_GDD_2.fq /common/yinlab/kshahzad2/L4_566_GDD_forward_paired.fq.gz /common/yinlab/kshahzad2/L4_566_GDD_forward_unpaired.fq.gz /common/yinlab/kshahzad2/L4_566_GDD_reverse_paired.fq.gz /common/yinlab/kshahzad2/L4_566_GDD_reverse_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
 
 Command in Glu: Software already installed, just follow the commands
-$ java -jar /home/khurrams569/Trimmomatic-0.39/trimmomatic-0.39.jar PE -phred33 V300031144_L4_TEArrrRAACB-572_1.fq.gz V300031144_L4_TEArrrRAACB-572_2.fq.gz L4_572_forward_paired.fq.gz L4_572_forward_unpaired.fq.gz L4_572_reverse_paired.fq.gz L4_572_reverse_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
+>java -jar /home/khurrams569/Trimmomatic-0.39/trimmomatic-0.39.jar PE -phred33 V300031144_L4_TEArrrRAACB-572_1.fq.gz V300031144_L4_TEArrrRAACB-572_2.fq.gz L4_572_forward_paired.fq.gz L4_572_forward_unpaired.fq.gz L4_572_reverse_paired.fq.gz L4_572_reverse_unpaired.fq.gz ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36
 
 4 new files are generated.  
-L4_566_GDD_forward_paired.fq.gz L4_566_GDD_forward_unpaired.fq.gz L4_566_GDD_reverse_paired.fq.gz L4_566_GDD_reverse_unpaired.fq.gz
+*L4_566_GDD_forward_paired.fq.gz 
+*L4_566_GDD_forward_unpaired.fq.gz 
+*L4_566_GDD_reverse_paired.fq.gz 
+*L4_566_GDD_reverse_unpaired.fq.gz
 
 Use paired sequence files for next step. 
+
 2.	Mapped sequence with reference genome
-Tools used Bowtie; See the commands below in HCC;
-module load bowtie/2.5
+* Tools used Bowtie; See the commands below in HCC;
+>module load bowtie/2.5
 
-$ bowtie2-build –-help
+>bowtie2-build –-help
 
-$ bowtie2-build -f input_reference.fasta bowtie
+>bowtie2-build -f input_reference.fasta bowtie
 
-$ bowtie –-help
+>bowtie –-help
  
-$ bowtie2 --very-fast-local -x /common/yinlab/kshahzad2/bowtie -1 /common/yinlab/kshahzad2/L4_566_GDD_forward_paired.fq.gz -2 /common/yinlab/kshahzad2/L4_566_GDD_reverse_paired.fq.gz -S /common/yinlab/kshahzad2/L4_566_GDD_mapped.sam
+>bowtie2 --very-fast-local -x /common/yinlab/kshahzad2/bowtie -1 /common/yinlab/kshahzad2/L4_566_GDD_forward_paired.fq.gz -2 /common/yinlab/kshahzad2/L4_566_GDD_reverse_paired.fq.gz -S /common/yinlab/kshahzad2/L4_566_GDD_mapped.sam
 
-To convert .sam into .bam file use this command in samtools in HCC:
+*To convert .sam into .bam file use this command in samtools in HCC:
 
-Module load samtools
+*Module load samtools
 
-$ samtools view -S -b /input_Path/filename.sam > /output_path/filename.bam
+>samtools view -S -b /input_Path/filename.sam > /output_path/filename.bam
 
-$ convert .sam file into .fastq file by following command:
+>convert .sam file into .fastq file by following command:
 
-$ samtools fastq -F 4 L3_568_mapped.sam > L3_568_mapped.fastq
+>samtools fastq -F 4 L3_568_mapped.sam > L3_568_mapped.fastq
 
 
 Tools used Bowtie; See the commands below in Glu and Gly;
