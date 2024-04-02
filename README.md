@@ -1,4 +1,4 @@
-# khurrams
+# Chloroplast-and-Mitochondrial-Genome-Assembly-of-Illumina-sequence
 
 
 Commands and Procedure Glu and HCC
