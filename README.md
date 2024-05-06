@@ -54,12 +54,16 @@ Use seqtk for extract mapped sequence from original sequence files.
 >seqtk subseq L1_542_reverse_paired.fq.gz L1_542_map_reverse_id > L1_542_mapped_mito_reverse.fastq &
 
 4.	Assembly of filtered Chloroplast and Mitochondrial reads by using NOVOPlasty.
-•	NOVOPlasty is a de novo assembler specialized for assembling organelle genomes (such as chloroplasts) from whole-genome data, which can also be used for mitochondrial and bacterial genomes. It utilizes a seed-and-extend algorithm, and requires a related reference sequence in fasta format and a seed sequence, which can be a part of the chloroplast genome.
-•	Here is a step-by-step guide to using NOVOPlasty through an SSH terminal to assemble chloroplast sequences:
-•	Install NOVOPlasty: If NOVOPlasty is not installed on the server, you can clone it from the GitHub repository:
+
+NOVOPlasty is a de novo assembler specialized for assembling organelle genomes (such as chloroplasts) from whole-genome data, which can also be used for mitochondrial and bacterial genomes. It utilizes a seed-and-extend algorithm, and requires a related reference sequence in fasta format and a seed sequence, which can be a part of the chloroplast genome.
+
+Here is a step-by-step guide to using NOVOPlasty through an SSH terminal to assemble chloroplast sequences:
+
+Install NOVOPlasty: If NOVOPlasty is not installed on the server, you can clone it from the GitHub repository:
 git clone https://github.com/ndierckx/NOVOPlasty.git
-•	Prepare Configuration File: NOVOPlasty requires a configuration file (e.g., config.txt) with details about the project. Here is an example of how the file format would look:
-•	
+
+Prepare Configuration File: NOVOPlasty requires a configuration file (e.g., config.txt) with details about the project. Here is an example of how the file format would look:
+
 •	Project:
 •	-----------------------
 •	Project name         	 = ChloroplastAssembly
@@ -104,46 +108,71 @@ To check the number of base pairs in Spades assembly:
 >module load SRAtoolkit/2.11
 >vdb-config -i
 You will see a screen where you operate the buttons by pressing the letter highlighted in red, or by pressing the tab-key until the wanted button is reached and then pressing the space- or the enter-key.
-I.	You want to enable the "Remote Access" option on the Main screen.
-II.	If you would like the toolkit to default to using the smaller SRA Lite format with simplified quality scores, set the "Prefer SRA Lite files with simplified base quality scores" option on the Main screen.
-III.	Proceed to the "Cache" tab where you will want to enable "local file-caching" and you want to set the "Location of user-repository".
-IV.	The repository directory needs to be set to an empty folder. This is the folder where prefetch will deposit the files.
-V.	Go to your cloud provider tab and accept to "report cloud instance identity".
+
+I.You want to enable the "Remote Access" option on the Main screen.
+
+II.If you would like the toolkit to default to using the smaller SRA Lite format with simplified quality scores, set the "Prefer SRA Lite files with simplified base quality scores" option on the Main screen.
+
+III.Proceed to the "Cache" tab where you will want to enable "local file-caching" and you want to set the "Location of user-repository".
+
+IV.The repository directory needs to be set to an empty folder. This is the folder where prefetch will deposit the files.
+
+V.Go to your cloud provider tab and accept to "report cloud instance identity".
+
 >prefetch SRR5416919
+
 >srapath SRR000001
+
 >fastq-dump SRR000001
+
 >ls -l SRR5416919.fastq
+
 >wc -l SRR5416919.fastq
+
 >cache-mgr --report
+
 >cache-mgr --clear
 
 7.	CANU assembly for PACbio data in HCC: 
 First step is correction of fastq file.
+
 >canu -correct -p camellia -d assembly genomeSize=1.1m -pacbio /common/yinlab/kshahzad2/camellia_sinensis_var_assamica/camellia_Reads.fasta.gz
+
 Then, trim the output of the correction:
+
 >canu -trim -p camellia -d assembly1   genomeSize=1.1m -corrected -pacbio /common/yinlab/kshahzad2/camellia_sinensis_var_assamica/camellia.correctedReads.fasta.gz
+
 And finally, assemble the output of trimming, twice, with different stringency on which overlaps to use:
+
 >canu -p camellia -d assembly-0.039 genomeSize=1.1m correctedErrorRate=0.039 -trimmed -corrected -pacbio /common/yinlab/kshahzad2/camellia_sinensis_var_assamica/cammelia.trimmedReads.fasta.gz
+
 >canu -p camellia -d assembly-0.075 genomeSize=1.1m correctedErrorRate=0.075 -trimmed -corrected -pacbio /common/yinlab/kshahzad2/camellia_sinensis_var_assamica/cammelia.trimmedReads.fasta.gz
 
 8.	Blast in Glu and HCC: 
+
 >makeblastdb -in mito_db.fasta -out camellia -dbtype nucl -title plant -parse_seqids
+
 >blastn -db camellia -query scaffolds.fasta -task blastn -dust no > output.txt
 
 9.	GetOrganelle for Mitochondrial assembly in HCC:
+
 >get_organelle_config.py --add embplant_pt,embplant_mt
+
 >get_organelle_from_reads.py -s seed.fasta -1 forward.fq -2 reverse.fq -a chloroplast.fasta --genes MT_coding_sequnce.fasta -o mitochondria_output -R 20 -k 21,45,65,85,105 -P 1000000 -F embplant_mt
+
 GetOrganelle in Glu commands:
+
 >get_organelle_from_reads.py -1 R1.clean.fastq -2 R2.clean.fastq -s mitochondrion.fasta -a chloroplast.fasta --genes MT_coding_sequnce.fasta -o mitochondria_Sample1 -R 30 -t 20 -k 21,35,45,55,75,95,105,115,127 -F plant_mt
 
 10.	Velvet for Mitochondrial assembly in HCC:
+
 >module load velvet/1.2
+
 >velveth output_directory/ 43 -fastq -longPaired -separate input_reads_pair_1.fastq input_reads_pair_2.fastq
+
 >velvetg output_directory/ -min_contig_lgth 200
 
 For mitochondrial Annotation: (http://www.1kmpg.cn/mgavas/)
-![image](https://github.com/Khurrams569/Chloroplast-and-Mitochondrial-Genome-Assembly-of-Illumina-sequence-/assets/165841830/a739b958-ec3c-49d1-9f4d-8645e580f4b8)
-
 
 *To convert .sam into .bam file use this command in samtools in HCC:
 >module load samtools
@@ -192,7 +221,3 @@ Check the sequence in mapped file:
 Use seqtk for extract mapped sequence from original sequence files.
 >seqtk subseq L1_542_reverse_paired.fq.gz L1_542_map_reverse_id > L1_542_mapped_mito_reverse.fastq &
 
-
-
-
-![image](https://github.com/Khurrams569/khurrams/assets/165841830/f78c50d6-0cad-4e22-9119-92344eb78d18)
