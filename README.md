@@ -261,3 +261,22 @@ Use seqtk for extract mapped sequence from original sequence files.
 
 >seqtk subseq L1_542_reverse_paired.fq.gz L1_542_map_reverse_id > L1_542_mapped_mito_reverse.fastq &
 
+Pangene tools
+
+https://github.com/colindaven/awesome-pangenomes?tab=readme-ov-file
+
+Pangene tool 
+
+https://github.com/lh3/pangene/blob/main/README.md#visual
+
+>./miniprot --outs=0.97 --no-cs -Iut16 -S 12spp.fasta.gz 12spppro.fasta.gz > aln.paf
+
+>pangene -a2 -p0 aln.paf > aln.gfa
+
+
+PGGB tool
+
+>pggb -i camelliasinensis.fasta -o 446samples -n 446 -V NC_020019.1.fasta &
+
+>pggb wfmash -i publimba.fasta -n 14 -o newpublimba1 -s 156k -p 90 -t 16 &
+
